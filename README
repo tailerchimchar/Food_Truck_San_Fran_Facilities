@@ -1,0 +1,113 @@
+Rad AI — Food Facilities API (Backend Focused)
+
+Overview
+
+This code is for the Food Facilities Challenge for Rad AI. 
+
+I created a backend for the dataset "Mobile_Food_Facility_Permit.csv". The dataset that is passed is injected into a DataFrame and then a client is created to perform various operations on it. The main ones are: 
+- SearchApplicant: Returns a JSON object from the DataFrame where the dataset matches the Applicant and optionally the status, too.
+- SearchStreet: Returns a list of JSON objects from the DataFrame where the dataset contains the Address (SAN returns a list of streets that contain "SAN")
+- GetNearestFoodTrucks: Returns a list of JSON objects from the DataFrame where the dataset's closest <limit> locations are to the latitude and longitude passed. Optionally, you can filter on the status and change the limit to return how many food trucks are close by.
+
+Tech Stack: 
+- FastAPI for creating the routing, API, and fast rendering of data (Swagger UI at localhost:8000/docs)
+- pandas/numpy for interpretation and querying of data
+- pytest for Unit testing
+- docker for packaging of application
+- ReactJS + Typescript for components
+- Axios + Cors for middleware and communication between front/backend
+
+Why I used FastAPI: 
+While I could have used Django to set up the operations, I used FastAPI because it has built-in swagger UI which allows me to easily test my endpoints. Also, the router convention along with the asynchronous nature makes the code cleaner. The code I was able to write was extendable, maintainable, and easily testable and FastAPI made this possible.
+
+Why I used Pandas:
+Because 400-500 values for a dataset is on the smaller side, I used Pandas because I wanted to learn about how to retrieve data from Pandas rather than through a database. If it were on a larger scale, however, I would have used SQLite or PostgreSQL if I were given more time. 
+
+Why I used pytest:
+I used pytest because I wanted to create unit tests based off of Test-Driven Development. Rather than creating code and building tests around it, I wanted to create tests for one function at a time to make sure that each part worked.
+
+Why I used Docker:
+It is efficient and scalable to package all of the dependencies for the backend use. Using a virtual machine is heavier, requires more CPU, and has a lot of overhead.
+
+Why I used ReactJS + TypeScript: 
+I think that ReactJS + Typescript is one of the most modernized ways to create a front-end. It allows for passing props, creating custom components, and much more features for extendable, testable code. The testing is very enjoyable to use, too. 
+
+TradeOffs:
+If I had more time, I would definitely have implemented an SQLite database or a PostGIS/PostgreSQL database using SQLAlchemy. Additionally, along with making an SQLAlchemy database, I would have implemented classes to showcase OOP using Pydantic models for our fast API data validation. This would include more security through environment variables. 
+
+If I had more time, I would definitely have spent a lot more time on the front-end and implemented Google Maps to show the closest restaurants on a map.
+Similarly, I would have loved to implement the distance in my "GetClosestFoodTrucks" function using Google distance rather than Euclidean distance.. But the API key costs money and I would not have wanted that for a take-home test. 
+
+If I had more time, I would have made the front-end look more loveable/user-friendly but I wanted to spend most of my time showcasing the back-end capabilities. 
+
+I also spent some time on the front-end because it feels strange having a functional core back-end without a user-friendly loveable front-end. So I spent a quarter of my time creating this food truck information site with used code from my Github. If I had spent all of my time in the back-end, perhaps I would have time to implement a database using PostGIS or PostgreSQL or SQLite3. 
+
+Implementation on a large scale:
+1. I did not use SQLAlchemy or a database. Because I used pandas to process the data, it is in memory and loading all of the data to find every street that begins with "SAN" would be very computational. If I could change it or had more time, I would utilize SQLAlchemy or SQLAlchemy.ORM to map object related values to a class. 
+2. Because I also used Pandas, I was unable to fully implement the dependency injection rule in SOLID principles. The DI rule from SOLID states that you promote loose coupling through a mock environment rather than creating the class itself. If I had more time with this project, I would create a mock within my testing to create a test client. Similarly, I would create a get_db() function that yields the database and deletes it upon finishing its uses.
+3. Additionally, if I were to use this dataset on a large scale, I would pass in the endpoints from the environment variables to make sure that the Database is secure. However, because I am using pandas and this is a take-home assessment, there is no need to make environment variables that would be passed and tested by engineers. If I were to make this for a production database, however, I would 1) utilize Google Maps to hide the API_Key to find the proper distances and 2) hide the endpoint from where the sqlite database would be stored. 
+
+To test on frontend, you need to get the server running first.
+2 Ways to Set up the Server: 
+a)Steps necessary to run the tests using Docker:
+1. Make sure that Docker Desktop/Daemon is running to run docker commands on CLI 
+`cd <project-root>/backend`
+docker
+2. Build the container image 
+`docker build -t fastapi .`
+3. Run the container image 
+`docker compose up --build`
+4. Navigate to localhost:8000/docs
+5. Run the swagger UI.
+
+How to run tests in container:
+`docker compose run --rm web pytest -q`
+
+b) Steps necessary to run the tests locally:
+1. Make sure that Python is downloaded on the system
+`cd <project-root>/backend`
+2. python3 -m venv env
+3. Run the following pip installs:
+`pip install -r requirements.txt`
+4. Run the script to activate the virtual environment 
+`.\env\Scripts\Activate.ps1`
+5. Utilize uvicorn to run the server locally in your browser 
+`uvicorn api:app --reload` 
+6. (If on mac/Linux):
+source env/bin/activate
+7. In browser, go to to localhost:8000/docs to find the swagger UI
+
+How to run tests locally:
+`pytest`
+
+After setting up the server, you can test the front-end
+1. Navigate to the frontend in the project root
+`cd <project-root>/frontend`
+2. Install the dependencies
+`npm install`
+3. Run the server
+`npm run dev`
+
+
+
+API References:
+SearchApplicant (case sensitive):
+http://127.0.0.1:8000/api/searchapplicant?applicant=The%20Geez%20Freeze
+(parameters:
+applicant (required) = The Geez Freeze
+)
+
+Search Street:
+http://127.0.0.1:8000/api/searchstreet?address=san
+(parameters: 
+address (required) = san
+)
+
+SearchNearestFoodTrucks: 
+http://127.0.0.1:8000/api/getnearestfoodtrucks?latitude=37&longitude=-122&limit=5&status=APPROVED
+(parameters: 
+latitude (required)= 37
+longitude (required) = -122
+limit = 5
+status = "APPROVED"
+)
